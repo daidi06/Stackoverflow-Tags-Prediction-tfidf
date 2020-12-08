@@ -66,12 +66,10 @@ class PredictTags():
 
     def text2tags(self, text):
         tfidf = self.text2tfidf(text)
-        idx_tags = np.argwhere(self.log_reg_model.predict(tfidf)[0]).squeeze()
-        tags = self.df_tags.iloc[idx_tags]
-        if type(tags) == str:
-            tags = [tags]
-        else:
-            tags = tags.values
+        prediction = self.log_reg_model.predict_proba(tfidf)
+        p = np.mean(prediction[0])+2*np.std(prediction[0])
+        index = np.where(prediction[0] > p)
+        tags = self.df_tags.iloc[index]
         return tags
 
 if __name__ == '__main__':
